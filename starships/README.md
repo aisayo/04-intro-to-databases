@@ -50,3 +50,9 @@ age INTEGER
 ```
 
 - UPDATE
+
+```
+UPDATE table
+SET column = ?, column = ?
+WHERE id = ?;
+```
