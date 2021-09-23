@@ -2,9 +2,9 @@ class Starship
 
     @@all = [] 
 
-    attr_accessor :starship_name, :model, :color
-    attr_reader :id 
-
+    attr_accessor :name, :model, :color
+    attr_reader :id
+    
     def initialize(attributes) 
         attributes.each do |key, value| 
             if self.respond_to?("#{key.to_s}=")
@@ -18,14 +18,23 @@ class Starship
             self.update
         else 
             sql = <<-SQL
-                INSERT INTO starships (starship_name, model, color) VALUES (?, ?, ?);
+                INSERT INTO starships (name, model, color) VALUES (?, ?, ?);
             SQL
 
-            DB.execute(sql, self.starship_name, self.model, self.color)
+            DB.execute(sql, self.name, self.model, self.color)
             @id = DB.last_insert_row_id
         end 
         self 
-    end 
+    end
+
+    def update 
+        sql = <<-SQL
+           UPDATE starships SET name = ?, model = ?, color = ? WHERE id = ?
+        SQL
+
+        DB.execute(sql, self.name, self.model, self.color, self.id)
+        self
+    end
 
     def self.all 
         array_of_hashes = DB.execute("SELECT * FROM starships")
@@ -38,28 +47,18 @@ class Starship
         self.all.find do |starship|
             starship.name == name
         end 
-    end 
+    end
 
     def self.create_table 
-        # write a query that creates the table 
         sql = <<-SQL
         CREATE TABLE IF NOT EXISTS starships (
             id INTEGER PRIMARY KEY, 
-            starship_name TEXT,
+            name TEXT,
             model TEXT,
             color TEXT
         );
         SQL
         DB.execute(sql)
-    end 
-
-    def update 
-        sql = <<-SQL
-           UPDATE starships SET starship_name = ?, model = ?, color = ? WHERE id = ?
-        SQL
-
-        DB.execute(sql, self.starship_name, self.model, self.color, self.id)
-        self
     end
 
 end 
