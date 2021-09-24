@@ -6,3 +6,5 @@ Bundler.require(:default)
 DB = SQLite3::Database.new("db/starships.db")
 DB.results_as_hash = true
 require_all "lib"
+
+Starship.create_table
